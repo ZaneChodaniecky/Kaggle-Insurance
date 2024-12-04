@@ -18,11 +18,11 @@ from datetime import datetime
 
 
 if socket.gethostname() == 'zchodani-p-l01':
-    file_directory = r"C:\Users\zchodaniecky\OneDrive - Franklin Templeton\Documents\Python\NHL_data"
+    file_directory = r"C:\Users\zchodaniecky\OneDrive - Franklin Templeton\Documents\Python\Kaggle\Insurance Premiums"
 elif socket.gethostname() == 'FTILC3VBil7BwCe':
     file_directory = r"C:\Users\zchodan\OneDrive - Franklin Templeton\Documents\Python\Kaggle\Insurance Premiums"
 else:
-    file_directory = r"C:\Users\zanec\OneDrive\Documents\Python\NHL_data"
+    file_directory = r"C:\Users\zanec\OneDrive\Documents\Python\Kaggle\Insurance Premiums"
          
 os.chdir(file_directory)
 
@@ -35,6 +35,9 @@ df.info()
 df.describe(include='all')
 print(df.shape)
 print(df.columns)
+
+df['Annual Income'].describe()
+df['Policy Start Date'].head()
 
 # Identify duplicate rows
 duplicates = df.duplicated().sum()
@@ -68,8 +71,6 @@ df['Property Type'].value_counts()
 
 df['Age Category'].value_counts()
 
-
-
 ### Find average income based on age category and education and fill null values with it
 average_income = df.groupby(['Age Category', 'Education Level'])['Annual Income'].mean().reset_index()
 # Step 2: Merge the calculated means back into the original DataFrame
@@ -85,25 +86,27 @@ print(average_dependents)
 # Filled with the average of 2
 df['Number of Dependents'] = df['Number of Dependents'].fillna(2)
 
-### Find average health score based on age category, Marital Status,, and fill null values with it
+### Find average health score based on exercise frequency and smoking status and fill null values with it
 average_health_score = df.groupby(['Exercise Frequency','Smoking Status'])['Health Score'].mean().reset_index()
 print(average_health_score)
 # Filled with the average of 2
 df['Number of Dependents'] = df['Number of Dependents'].fillna(2)
 
-### Find average health score based on age category, Marital Status,, and fill null values with it
+### Find average number of claims based on age category, and fill null values with it
 average_previous_claims = df.groupby(['Age Category'])['Previous Claims'].mean().reset_index()
 print(average_previous_claims)
 # Filled with the average of 2
 df['Previous Claims'] = df['Previous Claims'].fillna(1)
 
-### Find average health score based on age category, Marital Status,, and fill null values with it
+### Find average credit score based on age category fill null values with it
 average_credit_score = df.groupby(['Age Category'])['Credit Score'].mean().reset_index()
 print(average_credit_score)
 # Filled with the average of 2
 df['Credit Score'] = df['Credit Score'].fillna(575)
 
-
+# Convert and Extract date from Policy Start Date
+df['Policy Start Date'] = pd.to_datetime(df['Policy Start Date'])
+df['Policy Start Date'] = df['Policy Start Date'].dt.date
 
 # Handle Categorical Null Data
 df['Occupation'] = df['Occupation'].fillna('Unknown')
@@ -128,7 +131,7 @@ df_encoded = pd.get_dummies(df_encoded, columns=['Age Category'], drop_first=Tru
 print (round((df_encoded.isnull().sum() / len(df_encoded)) * 100),1)
 
 
-
+df_encoded.info()
 
 # Convert Data Types
 df['Age'] = df['Age'].astype(int) # Has NAs
